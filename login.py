@@ -1,19 +1,18 @@
 import streamlit as st
-from db import create_connection, get_user
+import db
+from homepage import show_homepage
+import signup  # Import the signup module
 
-def login_user():
-    """Login form for the application."""
-    st.title('Login')
-    username = st.text_input('Username')
-    password = st.text_input('Password', type='password')
+def show_login_page():
+    st.title("Login")
+    username = st.text_input("User Name")
+    password = st.text_input("Password", type='password')
 
-    if st.button('Login'):
-        conn = create_connection('app.db')
-        user = get_user(conn, username)
-        if user and user[0][2] == password:
-            st.session_state['user'] = username
-            st.success('Logged in successfully!')
-            return True
+    if st.button("Login"):
+        if db.login_user(username, password):
+            show_homepage(username)  # Directs to the homepage if login is successful
         else:
-            st.error('Invalid username or password')
-            return False
+            st.error("Incorrect username/password")
+
+    if st.button("Signup"):
+        signup.show_signup_page()  # Directs to the signup page

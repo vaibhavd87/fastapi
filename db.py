@@ -1,44 +1,26 @@
 import sqlite3
-from sqlite3 import Error
 
-def create_connection(db_file):
-    """Create a database connection to the SQLite database."""
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        return conn
-    except Error as e:
-        print(e)
+# Connect to SQLite database (or create it if it doesn't exist)
+conn = sqlite3.connect('users.db', check_same_thread=False)
+c = conn.cursor()
 
-    return conn
+# Create table
+def create_table():
+    c.execute('CREATE TABLE IF NOT EXISTS userstable(username TEXT, password TEXT)')
 
-def create_table(conn):
-    """Create a table if it doesn't already exist."""
-    create_table_sql = """CREATE TABLE IF NOT EXISTS users (
-                            id integer PRIMARY KEY,
-                            username text NOT NULL,
-                            password text NOT NULL
-                          );"""
-    try:
-        c = conn.cursor()
-        c.execute(create_table_sql)
-    except Error as e:
-        print(e)
-
-def add_user(conn, user):
-    """Add a new user to the users table."""
-    sql = ''' INSERT INTO users(username,password)
-              VALUES(?,?) '''
-    cur = conn.cursor()
-    cur.execute(sql, user)
+# Add a new user
+def add_userdata(username, password):
+    c.execute('INSERT INTO userstable(username, password) VALUES (?,?)', (username, password))
     conn.commit()
-    return cur.lastrowid
 
-def get_user(conn, username):
-    """Get a user by username."""
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE username=?", (username,))
+# Login function
+def login_user(username, password):
+    c.execute('SELECT * FROM userstable WHERE username =? AND password = ?', (username, password))
+    data = c.fetchall()
+    return data
 
-    rows = cur.fetchall()
-
-    return rows
+# Check if user exists
+def check_user(username):
+    c.execute('SELECT * FROM userstable WHERE username =?', (username,))
+    data = c.fetchall()
+    return data
