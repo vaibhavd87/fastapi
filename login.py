@@ -14,5 +14,5 @@ def show_login_page(navigate_to):
         else:
             st.error("Incorrect Username/Password")
 
-    if st.button("Sign up"):
-        navigate_to('signup')
+    if st.button("Login"):
+        navigate_to('login')
