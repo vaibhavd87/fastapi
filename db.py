@@ -1,26 +1,19 @@
-import sqlite3
+import sqlite3 
 
-# Connect to SQLite database (or create it if it doesn't exist)
-conn = sqlite3.connect('users.db', check_same_thread=False)
-c = conn.cursor()
+def create_users_table():
+    conn = sqlite3.connect('data.db')
+    conn.execute('CREATE TABLE IF NOT EXISTS users(username TEXT, password TEXT)')
+    conn.close()
 
-# Create table
-def create_table():
-    c.execute('CREATE TABLE IF NOT EXISTS userstable(username TEXT, password TEXT)')
-
-# Add a new user
 def add_userdata(username, password):
-    c.execute('INSERT INTO userstable(username, password) VALUES (?,?)', (username, password))
+    conn = sqlite3.connect('data.db')
+    conn.execute('INSERT INTO users(username, password) VALUES (?,?)', (username, password))
     conn.commit()
+    conn.close()
 
-# Login function
 def login_user(username, password):
-    c.execute('SELECT * FROM userstable WHERE username =? AND password = ?', (username, password))
-    data = c.fetchall()
-    return data
-
-# Check if user exists
-def check_user(username):
-    c.execute('SELECT * FROM userstable WHERE username =?', (username,))
-    data = c.fetchall()
+    conn = sqlite3.connect('data.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM users WHERE username =? AND password = ?', (username, password))
+    data = cursor.fetchone()
     return data

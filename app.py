@@ -1,18 +1,24 @@
 import streamlit as st
-from login import login_user
-from home import show_homepage
-from db import create_connection, create_table
+from signup import show_signup_page
+from login import show_login_page
+from homepage import show_homepage
+from db import create_users_table
 
-# Initialize the database connection and tables
-conn = create_connection('app.db')
-create_table(conn)
+# Initialize the users table
+create_users_table()
 
-# Main application logic
-if 'user' not in st.session_state:
-    # Show the login page if the user is not logged in
-    logged_in = login_user()
-    if logged_in:
+# Main app
+def main():
+    st.sidebar.title("Navigation")
+    menu = ["Home", "Login", "Signup"]
+    choice = st.sidebar.selectbox("Menu", menu)
+
+    if choice == "Home":
         show_homepage()
-else:
-    # If the user is logged in, show the homepage
-    show_homepage()
+    elif choice == "Login":
+        show_login_page()
+    elif choice == "Signup":
+        show_signup_page()
+
+if __name__ == '__main__':
+    main()

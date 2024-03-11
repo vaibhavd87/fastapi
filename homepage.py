@@ -1,10 +1,7 @@
 import streamlit as st
 
 def show_homepage():
-    """Display the homepage content."""
-    st.title('Homepage')
-    st.write('Welcome to the homepage!')
-    if st.button('Logout'):
-        if 'user' in st.session_state:
-            del st.session_state['user']
-        st.write('You have been logged out.')
+    st.title("Homepage")
+    if st.button("Logout"):
+        st.session_state['logged_in'] = False
+        st.experimental_rerun()
