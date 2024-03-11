@@ -1,10 +1,14 @@
 import streamlit as st
-import pandas as pd
 
-# Simulating a database with a global variable
-# WARNING: This is not recommended for production use
+# Initialize session state for user management
+if 'username' not in st.session_state:
+    st.session_state['username'] = None
+
+# User and content database simulation
 users_db = []
+content_db = []
 
+# User management functions
 def register_user(username, password):
     users_db.append({'username': username, 'password': password})
 
@@ -14,69 +18,66 @@ def check_user(username, password):
             return True
     return False
 
-st.title('User Management Service')
+def fake_login(username):
+    st.session_state['username'] = username
 
-menu = ['Home', 'Login', 'SignUp']
-choice = st.sidebar.selectbox('Menu', menu)
+def logout():
+    if 'username' in st.session_state:
+        del st.session_state['username']
 
-if choice == 'Home':
-    st.subheader('Home')
-
-elif choice == 'Login':
-    st.subheader('Login Section')
-
-    username = st.text_input('Username')
-    password = st.text_input('Password', type='password')
-    
-    if st.button('Login'):
-        if check_user(username, password):
-            st.success(f'Logged In as {username}')
-        else:
-            st.warning('Incorrect Username/Password')
-
-elif choice == 'SignUp':
-    st.subheader('Create New Account')
-    new_username = st.text_input('Username', key='new_user')
-    new_password = st.text_input('Password', type='password', key='new_pass')
-    
-    if st.button('SignUp'):
-        register_user(new_username, new_password)
-        st.success(f'Account created for {new_username}')
-
-
-# Simulating a content database
-content_db = []
-
+# Content management functions
 def add_content(title, category, content):
     content_db.append({'title': title, 'category': category, 'content': content})
 
 def get_content_by_category(category):
     return [content for content in content_db if content['category'] == category]
 
+# App title and dynamic menu based on login state
 st.title('Marriage Awareness Website')
 
-menu = ['Home', 'Login', 'SignUp', 'Add Content', 'View Content']
-choice = st.sidebar.selectbox('Menu', menu)
+menu_items = ['Home']
 
-# User management sections...
+if st.session_state['username'] is None:
+    menu_items.extend(['Login', 'SignUp'])
+else:
+    menu_items.extend(['Add Content', 'View Content', 'Logout'])
 
-if choice == 'Add Content':
-    st.subheader('Add Educational Content')
-    
+choice = st.sidebar.selectbox('Menu', menu_items)
+
+# Menu actions
+if choice == 'Home':
+    st.subheader('Welcome to the Marriage Awareness Website')
+
+elif choice == 'Login':
+    username = st.text_input('Username')
+    password = st.text_input('Password', type='password')
+    if st.button('Login'):
+        if check_user(username, password):
+            fake_login(username)  # Simplified login
+            st.success(f'Logged In as {username}')
+            st.experimental_rerun()
+        else:
+            st.error('Incorrect Username/Password')
+
+elif choice == 'SignUp':
+    new_username = st.text_input('Username', key='new_user')
+    new_password = st.text_input('Password', type='password', key='new_pass')
+    if st.button('SignUp'):
+        register_user(new_username, new_password)
+        st.success(f'Account created for {new_username}')
+
+elif choice == 'Add Content' and st.session_state['username']:
     with st.form(key='content_form'):
         title = st.text_input('Title')
         category = st.selectbox('Category', ['Legal', 'Responsibilities', 'General'])
         content = st.text_area('Content')
         submit_button = st.form_submit_button(label='Submit')
-        
         if submit_button:
             add_content(title, category, content)
             st.success('Content added successfully!')
 
 elif choice == 'View Content':
-    st.subheader('Educational Content')
     selected_category = st.selectbox('Select a Category to Filter', ['All', 'Legal', 'Responsibilities', 'General'])
-    
     if selected_category == 'All':
         for content in content_db:
             st.write(f"### {content['title']}")
@@ -88,3 +89,8 @@ elif choice == 'View Content':
             st.write(f"### {content['title']}")
             st.write(f"**Category**: {content['category']}")
             st.write(content['content'])
+
+elif choice == 'Logout':
+    logout()
+    st.success('You have been logged out.')
+    st.experimental_rerun()
