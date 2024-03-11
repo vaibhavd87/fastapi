@@ -7,18 +7,16 @@ from db import create_users_table
 # Initialize the users table
 create_users_table()
 
+# Initialize session state
+if 'logged_in' not in st.session_state:
+    st.session_state['logged_in'] = False
+
 # Main app
 def main():
-    st.sidebar.title("Navigation")
-    menu = ["Home", "Login", "Signup"]
-    choice = st.sidebar.selectbox("Menu", menu)
-
-    if choice == "Home":
+    if st.session_state['logged_in']:
         show_homepage()
-    elif choice == "Login":
+    else:
         show_login_page()
-    elif choice == "Signup":
-        show_signup_page()
 
 if __name__ == '__main__':
     main()

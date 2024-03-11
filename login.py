@@ -1,5 +1,6 @@
 import streamlit as st
 from db import login_user
+from signup import show_signup_page
 
 def show_login_page():
     st.title("Login")
@@ -9,8 +10,10 @@ def show_login_page():
 
     if st.button("Login"):
         if login_user(username, password):
-            st.success("Logged In as {}".format(username))
+            st.success(f"Logged In as {username}")
             st.session_state['logged_in'] = True
-            st.experimental_rerun()
         else:
             st.error("Incorrect Username/Password")
+
+    if st.button("Sign up"):
+        show_signup_page()
