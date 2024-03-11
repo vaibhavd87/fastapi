@@ -5,8 +5,8 @@ from signup import show_signup_page
 def show_login_page():
     st.title("Login")
 
-    username = st.text_input("Username")
-    password = st.text_input("Password", type='password')
+    username = st.text_input("Username", key="login_username")  # Unique key
+    password = st.text_input("Password", type='password', key="login_password")  # Unique key
 
     if st.button("Login"):
         if login_user(username, password):
