@@ -18,7 +18,8 @@ def navigate_to(page):
 # Main app function to show pages based on current state
 def main():
     if st.session_state['current_page'] == 'home':
-        show_homepage(navigate_to)
+        # Calling show_homepage without navigate_to since it's not used there
+        show_homepage()  # Adjusted to call without navigate_to
     elif st.session_state['current_page'] == 'signup':
         show_signup_page(navigate_to)
     else:  # Default to login page
